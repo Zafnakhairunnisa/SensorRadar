@@ -9,6 +9,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
@@ -22,6 +23,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private float[] mAccelerometerData = new float[3];
     private float[] mMagnetometerData = new float[3];
+
+    private ImageView mSpotTop, mSpotLeft, mSpotRight, mSpotBottom;
+
+    private static final float VALUE_DRIFT = 0.05f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         mSensorAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mSensorMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        mSpotTop = findViewById(R.id.spot_top);
+        mSpotBottom = findViewById(R.id.spot_bottom);
+        mSpotRight = findViewById(R.id.spot_right);
+        mSpotLeft = findViewById(R.id.spot_left);
     }
 
     protected void onStart() {
@@ -85,6 +95,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         mTextSensoPitch.setText(getResources().getString(R.string.value_format, pitch));
         mTextSensrRoll.setText(getResources().getString(R.string.value_format, roll));
 
+        if (Math.abs(pitch) < VALUE_DRIFT) {
+            pitch = 0;
+        }
+        if (Math.abs(roll) < VALUE_DRIFT) {
+            roll = 0;
+        }
+
+        mSpotRight.setAlpha(0.0f);
+        mSpotTop.setAlpha(0.0f);
+        mSpotRight.setAlpha(0.0f);
+        mSpotBottom.setAlpha(0.0f);
+
+        if (pitch > 0) {
+            mSpotBottom.setAlpha(pitch);
+        }
+        else {
+            mSpotTop.setAlpha(Math.abs(pitch));
+        }
+        if (roll > 0) {
+            mSpotLeft.setAlpha(roll);
+        }
+        else {
+            mSpotRight.setAlpha(Math.abs(roll));
+        }
     }
 
 
